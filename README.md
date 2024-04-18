@@ -9,4 +9,4 @@ Desde esta plataforma se puede tener acceso a todas las denuncias ambientales pr
 
 Acá se realiza un análisis muy general para las infracciones del tema forestal, para los cantones de Osa y Golfito
 
-[ABRIR ANÁLISIS](Analisis-SITADA.pdf)
+[VER ANÁLISIS](Analisis-SITADA.pdf)
