@@ -1,0 +1,205 @@
+---
+title: "Análisis delitos ambientales cantones Osa y Golfito"
+author: "Guido Saborío-R"
+format: #html
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+editor: visual
+---
+
+## Introducción
+
+El Sistema Integrado de Trámite y Atención de Denuncias Ambientales (SITADA) <https://www.sitada.go.cr/denunciaspublico/index.aspx> el es el sitio oficial de Costa Rica, en donde se puede ingresar y consultar denuncias ambiental.Esta plataforma es un esfuerzo del Ministerio del Ambiente y Energía (MINAE) y la Contraloría del Ambiente. El SITADA es el resultado del trabajo conjunto de las diferentes dependencias del sector ambiente, y busca establecer un esquema de gestión de la información que sirva de soporte para la toma de decisiones, evaluación y monitoreo del cumplimiento al seguimiento y atención de denuncias ambientales.
+
+Desde esta plataforma se puede tener acceso a todas las denuncias ambientales presentadas, el tipo de infracción, y el estado en que está cada denuncia. La información disponible es desde el 2013 a la fecha, y puede ser desagregada en el tiempo, y geográficamente, por Provicia, Cantón y localidad. 
+
+Para este análisis, se descargo la información para todas las infracciones de la plataforma el día 18 de abril del presente, en formato excel, y su organización y visualización se realizó en RStudio. Es importante recordar, que las denuncias acá incluidas, son resultados del involucramiento de la sociedad civíl y el Estado, y que no representan hechos probados. Sin embargo, es razonable asumir que un aumento o disminución en denuncias, está relacionado con la frecuencia con que se comete o no un delito. 
+
+
+## Organización de la información
+
+A la base de datos original se le agregaron tres columnas (Localidad, Cantón, Provincia) las cuales se generaron a partir de la columna Localidad. Además, se agregó la columna "year", a partir de la columna "Fecha de Ingreso", que corresponde al día que se interpuso la denuncia. 
+
+### Delitos ambientales forestales
+
+El SITADA clasifica como tipo de ingreso "Forestal" a 8 tipos de infracciones, las cuales fueron utilizadas para esta parte del análisis.
+
+1. Adquisición y aserrío de árboles
+2. Anillado de arboles
+3. Envenenamiento de arboles
+4 Invasión Area Silvestre Protegida 
+5. Invasión de Area Protección de río/cuerpo de agua
+6. Socola/estratos de bosques
+7. Tala y/o aprovechamiento 
+8. Transporte de madera
+
+
+### Cacería
+
+Entre las infracciones relacionados a la vida silvetre, existe una específica para cacería, porlo cual fue seleccionada para esta parte del análisis. 
+
+```{r message=FALSE, warning=FALSE}
+#| echo: false
+#| global: TRUE
+library(dplyr)
+library(openxlsx)
+library(plyr)
+library(tidyr)
+library(ggplot2)
+library(kableExtra)
+library(RColorBrewer)
+
+data <- read.csv ("DatosEditados.csv")
+data$year <- as.character(data$year)
+cantones <- c(" Golfito", " Osa")
+
+data_OSAGOLFITO <-subset(data, Cantón %in% cantones,
+                         select= c(Infracción:year)) #Separar datos para Golfito y Osa
+
+## Datos para las infracciones consideradas "forestal" para SITADA
+
+forestal <- c("Adquisición y aserrío de árboles","Anillado de arboles","Envenenamiento de arboles",
+              "Invasión Area Silvestre Protegida", "Invasión de Area Protección de río/cuerpo de agua", 
+              "Socola/estratos de bosques", "Tala y/o aprovechamiento", 
+              "Transporte de madera") #vector con infracciones forestales
+
+
+delito_forestal <- subset(data_OSAGOLFITO, Infracción %in% forestal,select= c(Infracción:year))
+
+
+
+
+```
+
+## Resultados
+
+### Delitos forestales
+
+En general se puede observar que la infracción con mayor denuncias es la tala y/o aprovechamiento (Fig.1), y que las denuncias ambientales sobre el tema forestal han aumentado en el cantón de Osa desde el 2013, y han tenido una leve disminución en el cantón de Golfito (Fig.2. 
+
+
+```{r}
+#| echo: false
+library(RColorBrewer)
+ggplot(delito_forestal, mapping = aes(x= year, fill= Infracción))+
+  geom_bar()+
+  scale_fill_brewer(palette="Dark2")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  ggtitle("Fig. 1. Total de delitos ambientales forestales reportados por año, 
+          para cada tipo de infracción")
+
+ggplot(delito_forestal, mapping = aes(x= year, fill= Cantón))+
+  geom_bar(position='dodge')+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig.2. Total de delitos ambientales forestales reportados 
+          por año para cada Cantón")
+
+
+
+```
+
+#### Cantón de Golfito
+
+En el Cantón de Golfito, la infracción con mayor cantidad de denuncias es la tala y/o aprovechamiento, siendo que los otros tipos de infracciones varían según año. POr ejemplo, las denuncias de adquisición y aserrío de árboles fueron importantes en el 2019, mientras que la invasión a zona de protección ha sido una infracción importante en el 2019, 2022 y 2023 (Fig. 3).La tala y/o aprovechamiento se denuncia principalmente en Puerto Jiménez (Cuadro 1), siendo el 2020 el pico de denucias para esta localidad (Fig. 4)
+
+```{r  message=FALSE, warning=FALSE}
+#| echo: false
+#| tbl-colwidths: [60,40]
+#| 
+#| 
+
+
+
+delito_forestal_Golfito <- subset(delito_forestal, Cantón == " Golfito",select= c(Infracción:year))
+
+ggplot(delito_forestal_Golfito, mapping = aes(x= year, fill= Infracción))+
+  geom_bar()+
+  scale_fill_brewer(palette="Dark2")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  ggtitle("Fig. 3. Total de delitos ambientales forestales reportados 
+  por año en el Cantón 
+          de Golfito")
+
+kable (table(delito_forestal_Golfito$Infracción, delito_forestal_Golfito$Localidad))
+
+ggplot(subset(delito_forestal_Golfito, Infracción == "Tala y/o aprovechamiento" & Localidad == "Puerto Jimenez"), mapping = aes(x= year))+
+  geom_bar()+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 4. Total de denuncias por Tala y/o aprovechamiento por año 
+          en la localidad de Puerto Jiménez")
+
+```
+
+#### Cantón de Osa
+
+En el Cantón de Osa, la infracción con mayor cantidad de denuncias es tamién la tala y/o aprovechamiento, siendo la invasión a zona de protección la infracción que le sigue (Fig. 5).La tala y/o aprovechamiento se denuncia principalmente en Bahía Ballena (Cuadro 2), siendo el 2022 el pico de denucias para esta localidad (Fig. 6)
+
+
+```{r  message=FALSE, warning=FALSE}
+#| echo: false
+#| tbl-colwidths: [60,40]
+
+
+library(kableExtra)
+
+
+delito_forestal_Osa <- subset(delito_forestal, Cantón == " Osa",select= c(Infracción:year))
+
+ggplot(delito_forestal_Osa, mapping = aes(x= year, fill= Infracción))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 5. Total de delitos ambientales forestales reportados por año en el Cantón 
+          de Osa")
+
+# Cuadro 1.
+kable (table(delito_forestal_Osa$Infracción, delito_forestal_Osa$Localidad))
+
+ggplot(subset(delito_forestal_Osa, Infracción == "Tala y/o aprovechamiento" & Localidad == "Bahia Ballena"), mapping = aes(x= year))+
+  geom_bar()+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 6. Total de denuncias por Tala y/o aprovechamiento por año 
+          en la localidad de Bahía Ballena")
+
+```
+
+### Cacería
+
+En general la denuncias de cacería tuvieron su pico en los años 2018 en el cantón de Golfito y 2019 en el cantón de Osa (Fig. 7).Las denuncias de cacería no son tan abundantes como las denuncias de tala (cuadro 3), y es necesario valorar si esta diferencia se atribuye a que hay menos delitos de cacería, o a que las personas no lo reportan. 
+
+Laslocalidades de Sierpte y Piedras Blancas son las que más denuncias de cacería tiene (Fig 8.), mientras que en el cantón de Golfito, es la localidad de Puerto Jiménez(fig. 9). 
+
+
+```{r  message=FALSE, warning=FALSE}
+#| echo: false
+#| tbl-colwidths: [60,40]
+
+delito_caceria <- subset(data_OSAGOLFITO, Infracción == "Cacería",select= c(Infracción:year))
+
+
+ggplot(delito_caceria, mapping = aes(x= year, fill=Cantón))+
+  geom_bar(position='dodge')+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 7. Total de denuncias de cacería reportados por año")
+
+kable (table(delito_caceria$Localidad, delito_caceria$year))
+
+ggplot(subset(delito_caceria, Cantón == " Osa"), mapping = aes(x= Localidad))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 8. Total de denuncias de cacería reportadas por localidad, 
+          Cantón de Osa")
+
+ggplot(subset(delito_caceria, Cantón == " Golfito"), mapping = aes(x= Localidad))+
+  geom_bar()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_fill_brewer(palette="Dark2")+
+  ggtitle("Fig. 9. Total de denuncias de cacería reportadas por localidad, 
+          Cantón de Golfito")
+
+```
+
