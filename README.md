@@ -7,6 +7,6 @@ ambientales.
 
 Desde esta plataforma se puede tener acceso a todas las denuncias ambientales presentadas, el tipo de infracción, y el estado en que está cada denuncia. La información disponible es desde el 2013 a la fecha, y puede ser desagregada en el tiempo, y geográficamente, por Provicia, Cantón y localidad.
 
-Acá se realiza un análisis muy general para las infracciones del tema forestal, para los cantones de Osa y Golfito
+Acá se realiza un análisis muy general para las infracciones del tema forestal y cacería, para los cantones de Osa y Golfito
 
 [VER ANÁLISIS](Analisis-SITADA.pdf)
