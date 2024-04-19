@@ -1,4 +1,4 @@
-## ANÁLISIS PRELIMINAR DE SITADAS PARA EL TEMA FORESTAL-GOLFITO-OSA
+## ANÁLISIS PRELIMINAR DE SITADAS PARA EL TEMA FORESTAL Y CACERÍA-GOLFITO-OSA
 
 El Sistema Integrado de Trámite y Atención de Denuncias Ambientales (SITADA) https:
 //www.sitada.go.cr/denunciaspublico/index.aspx el es el sitio oficial de Costa Rica, en donde se puede ingresar y consultar denuncias ambiental.Esta plataforma es un esfuerzo del Min- isterio del Ambiente y Energía (MINAE) y la Contraloría del Ambiente. El SITADA es el resultado del trabajo conjunto de las diferentes dependencias del sector ambiente, y busca
